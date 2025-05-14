@@ -1,19 +1,14 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-    experimental: {
-      appDir: true,
-      serverComponentsExternalPackages: ["mongoose"],
-    },
-    images: {
-      domains: ['lh3.googleusercontent.com'],
-    },
-    webpack(config) {
-      config.experiments = {
-        ...config.experiments,
-        topLevelAwait: true,
-      }
-      return config
+import Prompt from "@models/prompt";
+import { connectToDB } from "@utils/database";
+
+export const GET = async (request) => {
+    try {
+        await connectToDB()
+
+        const prompts = await Prompt.find({}).populate('creator')
+
+        return new Response(JSON.stringify(prompts), { status: 200 })
+    } catch (error) {
+        return new Response("Failed to fetch all prompts", { status: 500 })
     }
-  }
-  
-  module.exports = nextConfig
+} 
